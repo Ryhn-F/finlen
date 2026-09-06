@@ -132,15 +132,14 @@ export default function Home() {
                 Buka simulator <ArrowRight size={16} weight="bold" />
               </Link>
             </div>
-            <div
-              className="feature-art-slot"
-              role="img"
-              aria-label="Slot produksi ilustrasi yang menampilkan tumpukan koin kartun bertambah mengikuti grafik"
-            >
-              <span>
-                Tumpukan koin kartun yang menaiki kurva koral, dengan karakter
-                Nara dan sistem garis biru tua tebal yang sama.
-              </span>
+            <div className="feature-roleplay-media">
+              <Image
+                src="/simulator.webp"
+                width={400}
+                height={400}
+                alt="Ilustrasi simulasi roleplay menghadapi penagih utang"
+                className="feature-roleplay-img"
+              />
             </div>
           </article>
 
@@ -158,14 +157,19 @@ export default function Home() {
                 Hadapi penagih utang yang mendesak dalam skenario AI yang aman
                 dan pelajari pertanyaan yang dapat melindungimu.
               </p>
+              <Link href="/app/roleplay">
+                Mulai roleplay <ArrowRight size={16} weight="bold" />
+              </Link>
             </div>
-            <div
-              className="mini-art-slot"
-              role="img"
-              aria-label="Slot produksi ilustrasi yang menampilkan pelajar tetap tenang saat menerima telepon penagih utang"
-            >
-              Nara tetap tenang, telepon berdering, balon percakapan, tanpa
-              visual yang menakutkan.
+
+            <div className="feature-roleplay-media">
+              <Image
+                src="/roleplay.webp"
+                width={400}
+                height={400}
+                alt="Ilustrasi simulasi roleplay menghadapi penagih utang"
+                className="feature-roleplay-img"
+              />
             </div>
           </article>
 

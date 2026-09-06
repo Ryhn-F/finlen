@@ -9,7 +9,7 @@ import {
   SlidersHorizontal,
   WarningCircle,
 } from "@phosphor-icons/react";
-import { AppSidebar, AppTopbar } from "@/components/navigation";
+import { AppSidebar, AppTopbar, useSidebarState } from "@/components/navigation";
 import {
   CartesianGrid,
   Legend,
@@ -230,7 +230,7 @@ function ChartSkeleton() {
 
 export default function SimulatorWorkspace() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarMinimized, setSidebarMinimized] = useState(false);
+  const [sidebarMinimized, setSidebarMinimized] = useSidebarState();
   const [comparisonMode, setComparisonMode] = useState(false);
   const [lockTerms, setLockTerms] = useState(true);
   const [activeComparisonTab, setActiveComparisonTab] = useState<"A" | "B">(

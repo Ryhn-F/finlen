@@ -5,7 +5,7 @@ import { useScenarios } from "@/lib/hooks/useScenarios";
 import { ScenarioCard } from "./ScenarioCard";
 import { ScenarioListSkeleton } from "./RoleplaySkeleton";
 import { RoleplayError } from "./RoleplayError";
-import { Funnel, Gauge } from "@phosphor-icons/react";
+import { Funnel } from "@phosphor-icons/react";
 
 interface ScenarioSelectorProps {
   onSelectScenario: (scenarioId: string) => void;
@@ -32,7 +32,13 @@ export function ScenarioSelector({
   onSelectScenario,
   startingScenarioId,
 }: ScenarioSelectorProps) {
-  const { data: scenarios, isLoading, isError, error, refetch } = useScenarios();
+  const {
+    data: scenarios,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useScenarios();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
 
@@ -60,46 +66,52 @@ export function ScenarioSelector({
         <span className="eyebrow">Simulasi Keputusan Nyata</span>
         <h1 className="scenario-selector-title">Bermain Peran Finansial</h1>
         <p className="scenario-selector-lead">
-          Uji keputusanmu saat tekanan finansial terasa nyata. Hadapi situasi menegangkan,
-          ambil tindakan terbaik, dan pelajari konsekuensi sebelum uangmu menjadi taruhan.
+          Uji keputusanmu saat tekanan finansial terasa nyata. Hadapi situasi
+          menegangkan, ambil tindakan terbaik, dan pelajari konsekuensi sebelum
+          uangmu menjadi taruhan.
         </p>
 
-        {/* Category Filters */}
-        <div className="category-filter-bar" role="tablist" aria-label="Filter kategori skenario">
+        {/* Filters Row */}
+        <div className="scenario-filter-row">
           <span className="filter-icon" aria-hidden="true">
             <Funnel size={18} weight="duotone" />
           </span>
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              role="tab"
-              aria-selected={selectedCategory === cat.id}
-              className={`category-pill ${selectedCategory === cat.id ? "is-active" : ""}`}
-              onClick={() => setSelectedCategory(cat.id)}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
 
-        {/* Difficulty Filters */}
-        <div className="category-filter-bar" role="tablist" aria-label="Filter tingkat kesulitan skenario">
-          <span className="filter-icon" aria-hidden="true">
-            <Gauge size={18} weight="duotone" />
-          </span>
-          {DIFFICULTIES.map((diff) => (
-            <button
-              key={diff.id}
-              type="button"
-              role="tab"
-              aria-selected={selectedDifficulty === diff.id}
-              className={`category-pill difficulty-pill ${selectedDifficulty === diff.id ? "is-active" : ""} ${diff.id !== "all" ? `difficulty-${diff.id}` : ""}`}
-              onClick={() => setSelectedDifficulty(diff.id)}
+          <div className="filter-select-wrap">
+            <label htmlFor="filter-category" className="filter-select-label">
+              Kategori
+            </label>
+            <select
+              id="filter-category"
+              className="filter-select"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              {diff.label}
-            </button>
-          ))}
+              {CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-select-wrap">
+            <label htmlFor="filter-difficulty" className="filter-select-label">
+              Kesulitan
+            </label>
+            <select
+              id="filter-difficulty"
+              className={`filter-select ${selectedDifficulty !== "all" ? `difficulty-${selectedDifficulty}` : ""}`}
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
+            >
+              {DIFFICULTIES.map((diff) => (
+                <option key={diff.id} value={diff.id}>
+                  {diff.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </header>
 
@@ -123,7 +135,10 @@ export function ScenarioSelector({
       {!isLoading && !isError && filteredScenarios.length === 0 && (
         <div className="scenario-empty-state" role="status">
           <h3>Belum ada skenario yang cocok.</h3>
-          <p>Tidak ditemukan skenario dengan filter yang dipilih. Coba ubah kategori atau tingkat kesulitan.</p>
+          <p>
+            Tidak ditemukan skenario dengan filter yang dipilih. Coba ubah
+            kategori atau tingkat kesulitan.
+          </p>
           <button
             type="button"
             className="button button-secondary mt-4"
@@ -150,4 +165,3 @@ export function ScenarioSelector({
     </div>
   );
 }
-

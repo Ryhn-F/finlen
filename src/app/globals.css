@@ -2692,74 +2692,299 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.6;
 }
 
-/* Category Filter Bar */
-.category-filter-bar {
+/* ─── Scenario Filter Row (themed select dropdowns) ─── */
+.scenario-filter-row {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  scrollbar-width: none;
-}
-
-.category-filter-bar::-webkit-scrollbar {
-  display: none;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .filter-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--muted);
-  margin-right: 4px;
-}
-
-.category-pill {
-  display: inline-flex;
-  align-items: center;
+  width: 38px;
   height: 38px;
-  padding: 0 16px;
   border-radius: 999px;
-  border: 1px solid rgba(23, 34, 56, 0.12);
   background: var(--surface);
-  color: var(--muted);
-  font-size: 0.86rem;
-  font-weight: 650;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--ink);
+  border: 1px solid rgba(23, 34, 56, 0.12);
+  box-shadow:
+    0 2px 6px rgba(var(--shadow-tint), 0.04),
+    inset 0 1px rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
+  margin-bottom: 2px; /* align with bottom of select */
 }
 
-.category-pill:hover {
+.filter-select-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-select-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+  padding-left: 4px;
+}
+
+.filter-select {
+  appearance: none;
+  height: 40px;
+  min-width: 175px;
+  padding: 0 38px 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(23, 34, 56, 0.13);
+  background:
+    var(--surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23596276' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right 14px center;
   color: var(--ink);
-  border-color: rgba(23, 34, 56, 0.28);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow:
+    0 2px 6px rgba(var(--shadow-tint), 0.04),
+    inset 0 1px rgba(255, 255, 255, 0.8);
+  transition:
+    border-color 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.filter-select:hover {
+  border-color: rgba(23, 34, 56, 0.3);
+  transform: translateY(-1px);
+  box-shadow:
+    0 5px 14px rgba(var(--shadow-tint), 0.08),
+    inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow:
+    0 0 0 3px rgba(23, 34, 56, 0.08),
+    0 4px 12px rgba(var(--shadow-tint), 0.07);
   transform: translateY(-1px);
 }
 
-.category-pill.is-active {
-  background: var(--ink);
-  color: #f7f8f3;
+/* Difficulty color accents */
+.filter-select.difficulty-easy {
+  border-color: rgba(27, 122, 74, 0.5);
+  background-color: rgba(27, 122, 74, 0.06);
+  color: #1b7a4a;
+}
+
+.filter-select.difficulty-medium {
+  border-color: rgba(184, 134, 11, 0.5);
+  background-color: rgba(184, 134, 11, 0.06);
+  color: #946c05;
+}
+
+.filter-select.difficulty-hard {
+  border-color: rgba(192, 57, 43, 0.5);
+  background-color: rgba(192, 57, 43, 0.06);
+  color: #c0392b;
+}
+
+/* Scenario Filter Bar (unified 1-row dropdown toolbar) */
+.scenario-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.filter-bar-lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.filter-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid rgba(23, 34, 56, 0.12);
+  box-shadow: 0 2px 6px rgba(var(--shadow-tint), 0.04);
+}
+
+.filter-lead-text {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.filter-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Individual Filter Pill with integrated label + select */
+.filter-select-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 14px 0 16px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid rgba(23, 34, 56, 0.13);
+  box-shadow:
+    0 2px 6px rgba(var(--shadow-tint), 0.04),
+    inset 0 1px rgba(255, 255, 255, 0.85);
+  transition:
+    border-color 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.filter-select-pill:hover {
+  border-color: rgba(23, 34, 56, 0.3);
+  transform: translateY(-1px);
+  box-shadow:
+    0 5px 14px rgba(var(--shadow-tint), 0.08),
+    inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+.filter-select-pill:focus-within {
   border-color: var(--ink);
-  box-shadow: 0 6px 16px rgba(var(--shadow-tint), 0.14);
+  box-shadow:
+    0 0 0 3px rgba(23, 34, 56, 0.08),
+    0 4px 12px rgba(var(--shadow-tint), 0.08);
 }
 
-/* Difficulty pill active color overrides */
-.difficulty-pill.difficulty-easy.is-active {
-  background: #1b7a4a;
-  border-color: #1b7a4a;
-  box-shadow: 0 6px 16px rgba(27, 122, 74, 0.22);
+.filter-pill-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-right: 8px;
+  padding-right: 8px;
+  border-right: 1px solid rgba(23, 34, 56, 0.12);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
 }
 
-.difficulty-pill.difficulty-medium.is-active {
-  background: #b8860b;
-  border-color: #b8860b;
-  box-shadow: 0 6px 16px rgba(184, 134, 11, 0.22);
+.filter-select-inner {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
 }
 
-.difficulty-pill.difficulty-hard.is-active {
-  background: #c0392b;
-  border-color: #c0392b;
-  box-shadow: 0 6px 16px rgba(192, 57, 43, 0.22);
+.filter-select-input {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding-right: 20px;
+  outline: none;
+}
+
+.filter-select-input option {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  padding: 8px 12px;
+}
+
+.filter-select-caret {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  transition: transform 200ms ease, color 200ms ease;
+}
+
+.filter-select-pill:hover .filter-select-caret {
+  color: var(--ink);
+}
+
+/* Active / Filtered States */
+.filter-select-pill.is-filtered {
+  border-color: rgba(23, 34, 56, 0.32);
+  background: var(--surface-strong);
+}
+
+.filter-select-pill.is-filtered .filter-pill-label {
+  color: var(--ink);
+}
+
+/* Difficulty specific active accents */
+.filter-select-pill.difficulty-easy {
+  border-color: rgba(27, 122, 74, 0.45);
+  background: rgba(27, 122, 74, 0.07);
+}
+
+.filter-select-pill.difficulty-easy .filter-select-input {
+  color: #1b7a4a;
+}
+
+.filter-select-pill.difficulty-medium {
+  border-color: rgba(184, 134, 11, 0.45);
+  background: rgba(184, 134, 11, 0.07);
+}
+
+.filter-select-pill.difficulty-medium .filter-select-input {
+  color: #946c05;
+}
+
+.filter-select-pill.difficulty-hard {
+  border-color: rgba(192, 57, 43, 0.45);
+  background: rgba(192, 57, 43, 0.07);
+}
+
+.filter-select-pill.difficulty-hard .filter-select-input {
+  color: #c0392b;
+}
+
+/* Reset filter pill */
+.filter-reset-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px dashed rgba(23, 34, 56, 0.22);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.filter-reset-pill:hover {
+  background: var(--surface-strong);
+  color: var(--accent-dark);
+  border-color: var(--accent);
+  border-style: solid;
 }
 
 /* Scenario Grid & Cards */

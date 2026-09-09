@@ -56,21 +56,13 @@ export default function Home() {
             role="img"
             aria-label="Slot produksi ilustrasi yang menampilkan pelajar sedang menguji pilihan finansial sebelum mengambil keputusan"
           >
-            <div className="art-direction">
-              <span>Slot produksi ilustrasi</span>
-              <strong>Nara menguji dua kemungkinan</strong>
-              <p>
-                Pelajar bergaya kartun di depan konsol keputusan, dengan jalur
-                aman dan tumpukan koin yang bertambah. Garis biru tua tebal,
-                warna koral dan mint, serta tekstur kertas yang lembut.
-              </p>
-            </div>
-            <div className="choice-token choice-token-a">
-              <ShieldCheck size={32} weight="duotone" /> Tanya dulu
-            </div>
-            <div className="choice-token choice-token-b">
-              <ChartLineUp size={32} weight="duotone" /> Lihat pertumbuhan
-            </div>
+            <Image
+              src="/hero.webp"
+              alt="Ilustrasi pelajar sedang menguji pilihan finansial"
+              width={600}
+              height={400}
+              priority
+            />
           </div>
         </div>
       </section>
@@ -134,8 +126,8 @@ export default function Home() {
             </div>
             <div className="feature-roleplay-media">
               <Image
-                src="/simulator.webp"
-                width={400}
+                src="/feature-1.webp"
+                width={600}
                 height={400}
                 alt="Ilustrasi simulasi roleplay menghadapi penagih utang"
                 className="feature-roleplay-img"
@@ -164,7 +156,7 @@ export default function Home() {
 
             <div className="feature-roleplay-media">
               <Image
-                src="/roleplay.webp"
+                src="/feature-2.webp"
                 width={400}
                 height={400}
                 alt="Ilustrasi simulasi roleplay menghadapi penagih utang"

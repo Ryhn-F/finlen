@@ -90,7 +90,7 @@ const DEFAULT_NAV_ITEMS: SidebarNavItem[] = [
     href: "/app/roleplay",
     icon: BookOpenText,
   },
-  { id: "scanner", label: "Pemindai", href: "#scanner", icon: Scan },
+  { id: "scanner", label: "Pemindai", href: "/app/scanner", icon: Scan },
   { id: "progress", label: "Progres", href: "#progress", icon: Gauge },
 ];
 
@@ -118,15 +118,18 @@ export default function AppSidebar({
   const handleToggleMinimize =
     controlledToggleMinimize || (() => setPersistedMinimized((prev) => !prev));
 
-  // Optimistic active nav state for immediate click responsiveness
-  const [optimisticActiveId, setOptimisticActiveId] = useState<string | null>(
-    null,
-  );
+  // Optimistic active nav state for immediate click responsiveness.
+  // The pathname it was set from is stored alongside it so the optimistic
+  // value self-expires as soon as the router finishes navigating.
+  const [optimisticActive, setOptimisticActive] = useState<{
+    id: string;
+    fromPathname: string | null;
+  } | null>(null);
 
-  // Clear optimistic active item when route changes
-  useEffect(() => {
-    setOptimisticActiveId(null);
-  }, [pathname]);
+  const optimisticActiveId =
+    optimisticActive && optimisticActive.fromPathname === pathname
+      ? optimisticActive.id
+      : null;
 
   const auth = useAuth();
   const resolvedUser =
@@ -206,7 +209,7 @@ export default function AppSidebar({
   }, [mountOffset]);
 
   const handleItemClick = (item: SidebarNavItem) => {
-    setOptimisticActiveId(item.id);
+    setOptimisticActive({ id: item.id, fromPathname: pathname });
     if (typeof window !== "undefined") {
       try {
         if (currentActiveItem) {

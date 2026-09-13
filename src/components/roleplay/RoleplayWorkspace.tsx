@@ -34,8 +34,14 @@ function RoleplayInnerWorkspace() {
   const [sidebarMinimized, setSidebarMinimized] = useSidebarState();
   const [startingScenarioId, setStartingScenarioId] = useState<string | null>(null);
   const [reviewingTranscript, setReviewingTranscript] = useState(false);
-  const [isAutoCompleting, setIsAutoCompleting] = useState(false);
-  const hasAutoCompletedRef = useRef(false);
+  // Both auto-complete flags are scoped to a session id so switching sessions
+  // invalidates them without needing a state-resetting effect.
+  const [autoCompletingSessionId, setAutoCompletingSessionId] = useState<
+    string | null
+  >(null);
+  const autoCompletedSessionRef = useRef<string | null>(null);
+  const isAutoCompleting =
+    !!activeSessionId && autoCompletingSessionId === activeSessionId;
 
   // TanStack Query Hooks
   const { data: scenarios } = useScenarios();
@@ -70,12 +76,6 @@ function RoleplayInnerWorkspace() {
     Math.max(session?.turn_number || 1, userDecisionsCount + (hasPendingUserMessage ? 0 : 1)),
   );
 
-  // Reset auto-completed flag when active session changes
-  useEffect(() => {
-    hasAutoCompletedRef.current = false;
-    setIsAutoCompleting(false);
-  }, [activeSessionId]);
-
   // Automatically complete session when max turns are reached and evaluated
   useEffect(() => {
     if (
@@ -86,10 +86,10 @@ function RoleplayInnerWorkspace() {
       !sendMessageMutation.isPending &&
       !completeSessionMutation.isPending &&
       evaluatedUserTurns >= maxTurns &&
-      !hasAutoCompletedRef.current
+      autoCompletedSessionRef.current !== activeSessionId
     ) {
-      hasAutoCompletedRef.current = true;
-      setIsAutoCompleting(true);
+      autoCompletedSessionRef.current = activeSessionId;
+      setAutoCompletingSessionId(activeSessionId);
 
       const timer = setTimeout(async () => {
         try {
@@ -98,7 +98,7 @@ function RoleplayInnerWorkspace() {
         } catch {
           // Handled by mutation error state
         } finally {
-          setIsAutoCompleting(false);
+          setAutoCompletingSessionId(null);
         }
       }, 1200);
 
@@ -122,8 +122,8 @@ function RoleplayInnerWorkspace() {
     }
 
     setStartingScenarioId(scenarioId);
-    hasAutoCompletedRef.current = false;
-    setIsAutoCompleting(false);
+    autoCompletedSessionRef.current = null;
+    setAutoCompletingSessionId(null);
     try {
       const newSession = await createSessionMutation.mutateAsync(scenarioId);
       setReviewingTranscript(false);
@@ -156,8 +156,8 @@ function RoleplayInnerWorkspace() {
   // Exit back to scenario list
   function handleExitToScenarios() {
     setReviewingTranscript(false);
-    hasAutoCompletedRef.current = false;
-    setIsAutoCompleting(false);
+    autoCompletedSessionRef.current = null;
+    setAutoCompletingSessionId(null);
     router.push("/app/roleplay", { scroll: false });
   }
 

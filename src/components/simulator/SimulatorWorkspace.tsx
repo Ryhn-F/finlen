@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ChartLineUp,
   LockSimple,
@@ -36,6 +37,36 @@ type ChartPoint = {
 
 const DEFAULT_A: Scenario = { debt: 5_000_000, rate: 2, duration: 12 };
 const DEFAULT_B: Scenario = { debt: 5_000_000, rate: 5, duration: 12 };
+
+const DEBT_BOUNDS = { min: 100_000, max: 50_000_000 };
+const RATE_BOUNDS = { min: 0, max: 10 };
+
+function readBoundedParam(
+  raw: string | null,
+  bounds: { min: number; max: number },
+): number | null {
+  if (raw === null) return null;
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) return null;
+  if (parsed < bounds.min || parsed > bounds.max) return null;
+  return parsed;
+}
+
+/**
+ * Optional prefill from other FinLen features (e.g. the Smart Document Analyzer
+ * links here with `?debt=` and `?rate=`). Missing or out-of-range values fall
+ * back to the simulator defaults so the workspace always opens in a valid state.
+ */
+function resolveInitialScenario(params: URLSearchParams): Scenario {
+  const debt = readBoundedParam(params.get("debt"), DEBT_BOUNDS);
+  const rate = readBoundedParam(params.get("rate"), RATE_BOUNDS);
+
+  return {
+    debt: debt ?? DEFAULT_A.debt,
+    rate: rate ?? DEFAULT_A.rate,
+    duration: DEFAULT_A.duration,
+  };
+}
 
 function calculateFinal({ debt, rate, duration }: Scenario) {
   return Math.floor(debt * (1 + rate / 100) ** duration);
@@ -228,7 +259,21 @@ function ChartSkeleton() {
   );
 }
 
-export default function SimulatorWorkspace() {
+function SimulatorInnerWorkspace() {
+  const searchParams = useSearchParams();
+  const initialA = useMemo(
+    () => resolveInitialScenario(new URLSearchParams(searchParams.toString())),
+    [searchParams],
+  );
+  const initialB = useMemo<Scenario>(
+    () => ({
+      ...DEFAULT_B,
+      debt: initialA.debt,
+      duration: initialA.duration,
+    }),
+    [initialA],
+  );
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarMinimized, setSidebarMinimized] = useSidebarState();
   const [comparisonMode, setComparisonMode] = useState(false);
@@ -236,10 +281,10 @@ export default function SimulatorWorkspace() {
   const [activeComparisonTab, setActiveComparisonTab] = useState<"A" | "B">(
     "A",
   );
-  const [optionA, setOptionA] = useState<Scenario>(DEFAULT_A);
-  const [optionB, setOptionB] = useState<Scenario>(DEFAULT_B);
-  const [displayA, setDisplayA] = useState<Scenario>(DEFAULT_A);
-  const [displayB, setDisplayB] = useState<Scenario>(DEFAULT_B);
+  const [optionA, setOptionA] = useState<Scenario>(initialA);
+  const [optionB, setOptionB] = useState<Scenario>(initialB);
+  const [displayA, setDisplayA] = useState<Scenario>(initialA);
+  const [displayB, setDisplayB] = useState<Scenario>(initialB);
   const [calculating, setCalculating] = useState(false);
 
   const errorA = validateScenario(optionA);
@@ -328,10 +373,10 @@ export default function SimulatorWorkspace() {
   const differenceRatio = difference / Math.max(Math.min(finalA, finalB), 1);
 
   function reset() {
-    setOptionA(DEFAULT_A);
-    setOptionB(DEFAULT_B);
-    setDisplayA(DEFAULT_A);
-    setDisplayB(DEFAULT_B);
+    setOptionA(initialA);
+    setOptionB(initialB);
+    setDisplayA(initialA);
+    setDisplayB(initialB);
     setComparisonMode(false);
     setLockTerms(true);
     setActiveComparisonTab("A");
@@ -1018,5 +1063,20 @@ export default function SimulatorWorkspace() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function SimulatorWorkspace() {
+  return (
+    <Suspense
+      fallback={
+        <div className="workspace-suspense-fallback">
+          <span className="workspace-fallback-spinner" aria-hidden="true" />
+          <p>Menyiapkan lab simulasi...</p>
+        </div>
+      }
+    >
+      <SimulatorInnerWorkspace />
+    </Suspense>
   );
 }

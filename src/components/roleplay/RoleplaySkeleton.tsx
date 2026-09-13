@@ -58,3 +58,31 @@ export function RoleplayStatsSkeleton() {
     </div>
   );
 }
+
+export function ScenarioBriefingSkeleton() {
+  return (
+    <div
+      className="scenario-briefing-skeleton"
+      aria-label="Memuat detail skenario"
+      role="status"
+    >
+      <div className="skeleton-column-left shimmer">
+        <div className="skeleton-title shimmer" />
+        <div className="skeleton-desc shimmer" />
+        <div className="skeleton-desc shimmer" />
+        <div className="skeleton-desc short shimmer" />
+        <div className="skeleton-badge shimmer" />
+        <div className="skeleton-learning-card shimmer" />
+        <div className="skeleton-learning-card shimmer" />
+      </div>
+      <div className="skeleton-column-right shimmer">
+        <div className="skeleton-line shimmer" />
+        <div className="skeleton-line shimmer" />
+        <div className="skeleton-line shimmer" />
+        <div className="skeleton-line shimmer" />
+        <div className="skeleton-line shimmer" />
+        <div className="skeleton-pill-btn shimmer" />
+      </div>
+    </div>
+  );
+}

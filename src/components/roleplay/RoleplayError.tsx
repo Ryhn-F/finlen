@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowClockwise, WarningCircle } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import { ArrowClockwise, ArrowLeft, WarningCircle } from "@phosphor-icons/react";
 
 interface RoleplayErrorProps {
   title?: string;
@@ -35,5 +36,41 @@ export function RoleplayError({
         </button>
       )}
     </div>
+  );
+}
+
+function ScenarioErrorState({ title, message }: { title: string; message: string }) {
+  const router = useRouter();
+
+  return (
+    <div className="scenario-error-state">
+      <RoleplayError title={title} message={message} />
+      <button
+        type="button"
+        className="button button-secondary scenario-error-back-btn"
+        onClick={() => router.push("/app/roleplay")}
+      >
+        <ArrowLeft size={16} weight="bold" />
+        <span>Kembali ke Daftar Skenario</span>
+      </button>
+    </div>
+  );
+}
+
+export function ScenarioNotFoundState() {
+  return (
+    <ScenarioErrorState
+      title="Skenario Tidak Ditemukan"
+      message="Skenario yang kamu cari tidak tersedia atau sudah tidak aktif."
+    />
+  );
+}
+
+export function ScenarioInvalidState() {
+  return (
+    <ScenarioErrorState
+      title="Alamat Skenario Tidak Valid"
+      message="Alamat skenario ini tidak valid. Periksa kembali tautan yang kamu gunakan."
+    />
   );
 }

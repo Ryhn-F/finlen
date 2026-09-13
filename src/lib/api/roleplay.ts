@@ -1,7 +1,7 @@
 /**
  * FinLen Roleplay API service
  */
-import { apiClient } from "./client";
+import { apiClient, ApiError } from "./client";
 import type {
   CompleteSessionResponse,
   CreateSessionResponse,
@@ -10,14 +10,33 @@ import type {
   SendMessageResponse,
 } from "../types/roleplay";
 
+const CREATE_SESSION_TIMEOUT_MS = 30_000;
+
 export async function createRoleplaySession(
   scenarioId: string,
 ): Promise<CreateSessionResponse> {
-  return apiClient<CreateSessionResponse>("/api/v1/roleplay/sessions", {
-    method: "POST",
-    requiresAuth: true,
-    body: JSON.stringify({ scenario_id: scenarioId }),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), CREATE_SESSION_TIMEOUT_MS);
+
+  try {
+    return await apiClient<CreateSessionResponse>("/api/v1/roleplay/sessions", {
+      method: "POST",
+      requiresAuth: true,
+      body: JSON.stringify({ scenario_id: scenarioId }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (controller.signal.aborted) {
+      throw new ApiError(
+        0,
+        "Sesi tidak dapat dimulai. Silakan coba lagi.",
+        "Request timed out after 30s",
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function getRoleplaySession(

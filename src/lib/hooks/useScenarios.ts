@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { ApiError } from "../api/client";
 import { getScenario, getScenarios } from "../api/scenarios";
 import type { ScenarioDetail, ScenarioListItem } from "../types/roleplay";
 
@@ -17,12 +18,17 @@ export function useScenarios() {
 }
 
 export function useScenario(scenarioId: string | null) {
-  return useQuery<ScenarioDetail>({
-    queryKey: SCENARIO_QUERY_KEYS.detail(scenarioId || ""),
+  return useQuery<ScenarioDetail, ApiError>({
+    queryKey: SCENARIO_QUERY_KEYS.detail(scenarioId ?? ""),
     queryFn: () => {
-      if (!scenarioId) throw new Error("Scenario ID is required");
-      return getScenario(scenarioId);
+      const trimmed = (scenarioId ?? "").trim();
+      if (!trimmed) {
+        throw new ApiError(0, "Identifier skenario tidak valid.", "Invalid scenario id");
+      }
+      return getScenario(trimmed);
     },
     enabled: !!scenarioId,
+    staleTime: 5 * 60 * 1000, // Requirement 2.6: served from cache for 5 minutes
+    retry: false, // automatic retry is handled inside getScenario, not by TanStack Query
   });
 }

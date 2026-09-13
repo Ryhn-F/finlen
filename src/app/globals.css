@@ -6105,3 +6105,436 @@ input[type="range"]::-webkit-slider-thumb {
     justify-content: center;
   }
 }
+
+/* ==========================================================================
+   Scenario Detail Page (roleplay-scenario-detail-flow)
+   Layout + double-bezel + semantic-color treatment only.
+   Motion/interaction/responsive-hit-area styling lives in task 20.2.
+   ========================================================================== */
+
+/* Two-column briefing grid: side by side at >=1024px (Req 4.11), single
+   column with left content first below 1024px (Req 4.12/9.14). */
+.scenario-briefing-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 32px;
+  align-items: start;
+}
+
+/* Left column: back button, category badge, title, description, materials. */
+.scenario-briefing-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.scenario-back-btn,
+.scenario-error-back-btn {
+  width: fit-content;
+  margin-bottom: 4px;
+}
+
+.scenario-briefing-title {
+  max-width: 640px;
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  font-weight: 860;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+/* No truncation/clamping: renders the full description (up to 4000 chars). */
+.scenario-briefing-description {
+  max-width: 640px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.scenario-briefing-materials {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scenario-briefing-materials-heading {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Category / difficulty badges: pill treatment mirroring `.eyebrow`, using
+   only semantic tokens (Req 9.1). */
+.category-badge,
+.difficulty-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.difficulty-badge {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+/* Learning materials list */
+.learning-materials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.learning-materials-empty {
+  margin: 0;
+  padding: 16px 18px;
+  border-radius: var(--radius-control);
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.learning-material-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid rgba(23, 34, 56, 0.09);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+
+.learning-material-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.learning-material-desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.learning-material-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.learning-material-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: var(--accent-dark);
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.learning-material-unavailable {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.learning-material-source {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.learning-material-source-label {
+  font-weight: 650;
+}
+
+.learning-material-source a {
+  color: var(--accent-dark);
+}
+
+/* Right column double-bezel panel (Req 9.5): outer shell 32px radius, 8px
+   padding, `--surface-strong`; inner surface `--radius-card`, `--surface`,
+   with the Design_System's specular inset highlight. Mirrors the existing
+   `.doc-dropzone-wrap` / `.doc-dropzone` double-bezel pair. */
+.scenario-briefing-right-shell {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-radius: 32px;
+  background: var(--surface-strong);
+}
+
+.scenario-briefing-right-surface {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.72);
+}
+
+/* Financial context / NPC role / objective / max-turns rows, shared by
+   `FinancialContextRows` and the standalone rows in `ScenarioBriefingRight`. */
+.financial-context-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.financial-context-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.financial-context-row:last-child {
+  border-bottom: 0;
+}
+
+.financial-context-row-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.financial-context-row-value {
+  color: var(--ink);
+  font-weight: 750;
+  text-align: right;
+}
+
+/* The objective row's value is a full sentence, so it stacks under its
+   label instead of sitting side by side. */
+.scenario-briefing-objective-row {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.scenario-briefing-objective-row .financial-context-row-value {
+  text-align: left;
+}
+
+/* Initial-state stat rows, visually consistent with financial context rows. */
+.initial-state-stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.initial-state-stat-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.initial-state-stat-row:last-child {
+  border-bottom: 0;
+}
+
+.initial-state-stat-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.initial-state-stat-value {
+  color: var(--ink);
+  font-weight: 750;
+}
+
+/* Scenario briefing skeleton: mirrors `.scenario-briefing-columns`' shape.
+   `.skeleton-learning-card`/`.skeleton-pill-btn` follow the established
+   convention (`.skeleton-title`, `.skeleton-badge`, etc.) of carrying no
+   background of their own, relying on the `.shimmer` class applied in JSX. */
+.scenario-briefing-skeleton {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 32px;
+}
+
+.skeleton-column-left,
+.skeleton-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: var(--radius-card);
+}
+
+.skeleton-column-right {
+  padding: 28px;
+}
+
+.skeleton-learning-card {
+  height: 92px;
+  border-radius: var(--radius-control);
+}
+
+.skeleton-pill-btn {
+  height: 56px;
+  margin-top: 8px;
+  border-radius: 999px;
+}
+
+/* Scenario error state (not-found / invalid) */
+.scenario-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* `.scenario-detail-main` is combined with `.roleplay-main-container` in
+   `ScenarioDetailPage.tsx` (`className="roleplay-main-container
+   scenario-detail-main"`) and inherits that class's width/padding as-is;
+   no scenario-detail-specific override is needed. */
+
+@media (max-width: 1023.98px) {
+  .scenario-briefing-columns,
+  .scenario-briefing-skeleton {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Scenario Detail Page — interaction, motion, and responsive styling
+   (roleplay-scenario-detail-flow, task 20.2)
+
+   The following requirements are already satisfied by pre-existing global
+   rules and need no dedicated CSS in this block:
+   - 9.2  icon package/sizes — every icon in the new components is a
+     `@phosphor-icons/react` import; nothing below overrides an icon's
+     width/height/font-size.
+   - 9.3  Start_Button pill sizing — `.button` / `.button-primary` /
+     `.button-orb` already provide the 999px radius, >=48px min-height, and
+     32x32 orb; `.start-session-btn` inherits all of it and needs no
+     dedicated rule.
+   - 9.6  motion timing — the only transitions this spec previously declared
+     (via `.button`, inherited by the Back/Start/retry buttons) already use
+     `cubic-bezier(0.16, 1, 0.3, 1)` within the 200–900ms bound.
+   - 9.7  reduced motion — the existing global
+     `@media (prefers-reduced-motion: reduce)` rule targets
+     `*, *::before, *::after` and already reduces every animation/transition
+     this spec adds to 0.01ms.
+   - 9.11 contrast — `.difficulty-badge`'s `--accent-soft`/`--accent-dark`
+     pairing matches the already-established pairing used by
+     `.risk-badge.is-high` and `.scenario-card.category-debt .scenario-badge`.
+   - 9.12 focus outline — the existing global `:focus-visible` rule covers
+     every `<button>`/`<a>` this spec renders.
+   - 9.15 decorative transform reset — none of this spec's classes declare a
+     decorative rotation or horizontal translation at rest (the only
+     transform-bearing rule, `.button:hover .button-orb`, is a functional
+     hover affordance on an interactive element, not a decorative rest-state
+     transform), so there is nothing to reset below 768px.
+   ========================================================================== */
+
+/* Requirement 9.6: the learning material cards/links previously declared no
+   transition at all despite being clickable; give them the same hover
+   motion treatment as the rest of the Design_System's interactive cards. */
+.learning-material-card {
+  transition:
+    transform 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.learning-material-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(23, 34, 56, 0.18);
+  box-shadow: 0 12px 30px rgba(var(--shadow-tint), 0.07);
+}
+
+.learning-material-link {
+  transition:
+    background-color 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.learning-material-link:hover {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+/* Requirement 9.9: prevent long unbreakable strings (NPC role names,
+   string-typed financial-context values, learning-material titles and
+   descriptions, financial-context key labels) from forcing horizontal
+   scroll at a 320px viewport width. */
+.scenario-briefing-title,
+.scenario-briefing-description,
+.financial-context-row-label,
+.financial-context-row-value,
+.learning-material-title,
+.learning-material-desc,
+.learning-material-source {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Requirement 9.13: Session_Page-only containers introduced by tasks
+   15.1/16.1 that carry no styling yet. `.guest-banner-text`/`.guest-lock-icon`
+   used inside `.session-signin-required` are already styled by the Guest
+   Awareness Banner rules above. */
+.roleplay-session-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.session-loading-header {
+  height: 64px;
+  margin-bottom: 24px;
+  border-radius: var(--radius-card);
+}
+
+.session-signin-required {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 480px;
+  margin: 48px auto;
+  padding: 32px;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px rgba(23, 34, 56, 0.09),
+    0 10px 30px rgba(var(--shadow-tint), 0.04);
+}
+
+@media (max-width: 767px) {
+  /* Requirement 9.8: minimum 44x44px hit area for interactive controls below
+     768px. `.button` (Back_Button, Start_Button, error retry controls)
+     already carries `min-height: 48px` unconditionally, so the only control
+     introduced by this spec that falls short is `.learning-material-link`,
+     currently sized by its 8px vertical padding alone (~31px tall). */
+  .learning-material-link {
+    min-height: 44px;
+  }
+}

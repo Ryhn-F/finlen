@@ -27,11 +27,23 @@ export interface ScenarioFinancialContext {
   [key: string]: unknown;
 }
 
+export interface LearningMaterialItem {
+  id: string;
+  title: string;
+  description?: string | null;
+  formal_file_url?: string | null;
+  brainrot_file_url?: string | null;
+  source_name?: string | null;
+  source_url?: string | null;
+  created_at?: string;
+}
+
 export interface ScenarioDetail extends ScenarioListItem {
   financial_context: ScenarioFinancialContext;
   objective: string;
   initial_state: SessionStateData;
   created_at: string;
+  learning_materials: LearningMaterialItem[];
 }
 
 /**

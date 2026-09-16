@@ -84,7 +84,7 @@ export function RoleplayStats({ state, scores, xpEarned }: RoleplayStatsProps) {
     <aside className="roleplay-stats-panel" aria-label="Status Skenario & Naluri Finansial">
       {/* Mobile Toggle Bar */}
       <div
-        className="stats-mobile-bar lg:!hidden"
+        className="stats-mobile-bar"
         onClick={() => setIsMobileExpanded(!isMobileExpanded)}
         role="button"
         tabIndex={0}

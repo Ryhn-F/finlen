@@ -3440,6 +3440,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .npc-speech-quote {
   margin: 0;
+  overflow-wrap: anywhere;
   font-size: 0.98rem;
   line-height: 1.6;
   color: var(--ink);
@@ -3497,6 +3498,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .user-decision-text {
   margin: 0;
+  overflow-wrap: anywhere;
   font-size: 0.96rem;
   line-height: 1.6;
   color: var(--ink);
@@ -3926,7 +3928,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .stats-mobile-bar {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
@@ -4767,6 +4769,10 @@ input[type="range"]::-webkit-slider-thumb {
     grid-template-columns: 1fr;
   }
 
+  .stats-mobile-bar {
+    display: flex;
+  }
+
   .roleplay-stats-panel {
     position: static;
   }
@@ -4812,9 +4818,43 @@ input[type="range"]::-webkit-slider-thumb {
     gap: 12px;
   }
 
+  .session-page-main {
+    padding: 24px 14px 32px;
+  }
+
+  .roleplay-session-header {
+    padding: 16px;
+  }
+
+  .session-header-left {
+    width: 100%;
+  }
+
   .session-header-right {
     width: 100%;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .session-complete-trigger-btn {
+    width: 100%;
+    flex-basis: 100%;
+    justify-content: center;
+  }
+
+  .roleplay-chat-area {
+    min-height: 0;
+  }
+
+  .chat-transcript-scroll {
+    min-height: min(360px, 46dvh);
+    max-height: 46dvh;
+    padding: 20px;
+  }
+
+  .chat-decision-dock {
+    padding: 16px 18px;
   }
 
   .complete-skills-grid {
@@ -4828,6 +4868,72 @@ input[type="range"]::-webkit-slider-thumb {
 
   .complete-actions-bar button {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-transcript-scroll {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .chat-intro-callout,
+  .chat-bubble {
+    padding: 14px 16px;
+  }
+
+  .chat-bubble {
+    max-width: 100%;
+  }
+
+  .npc-identity-text,
+  .user-identity-text,
+  .decision-prompt-bar,
+  .msg-failed-state {
+    flex-wrap: wrap;
+  }
+
+  .decision-prompt-bar {
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .decision-input-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .decision-textarea {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .decision-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .mobile-bar-summary {
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+
+  .mobile-toggle-btn {
+    flex-shrink: 0;
+  }
+
+  .msg-failed-state {
+    align-items: flex-start;
+  }
+
+  .failed-retry-btn {
+    flex-shrink: 0;
+  }
+
+  .session-signin-required {
+    margin: 28px auto;
+    padding: 24px;
   }
 }
 
@@ -6505,6 +6611,7 @@ input[type="range"]::-webkit-slider-thumb {
    Awareness Banner rules above. */
 .roleplay-session-content {
   display: flex;
+  min-width: 0;
   flex-direction: column;
 }
 

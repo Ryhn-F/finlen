@@ -50,7 +50,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="hero-art-shell">
+        <div className="hero-art-shell  ">
           <div
             className="hero-art-slot"
             role="img"
@@ -60,7 +60,7 @@ export default function Home() {
               src="/hero.webp"
               alt="Ilustrasi pelajar sedang menguji pilihan finansial"
               width={600}
-              height={400}
+              height={300}
               priority
             />
           </div>
@@ -182,13 +182,14 @@ export default function Home() {
                 tentang istilah yang perlu diperiksa lebih lanjut.
               </p>
             </div>
-            <div
-              className="mini-art-slot"
-              role="img"
-              aria-label="Slot produksi ilustrasi yang menampilkan kaca pembesar ramah menemukan potensi tanda bahaya dalam kontrak"
-            >
-              Karakter kaca pembesar yang ramah melingkari istilah dalam
-              kontrak, dengan bahasa “Potensi Tanda Bahaya”.
+             <div className="feature-roleplay-media">
+              <Image
+                src="/document.png"
+                width={400}
+                height={400}
+                alt="Ilustrasi simulasi roleplay menghadapi penagih utang"
+                className="feature-roleplay-img"
+              />
             </div>
           </article>
         </div>

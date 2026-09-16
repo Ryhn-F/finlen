@@ -216,7 +216,7 @@ summary:focus-visible {
   width: min(1240px, calc(100% - 48px));
   min-height: calc(100dvh - 88px);
   margin: 0 auto;
-  padding: 36px 0 64px;
+
 }
 
 .hero-copy {

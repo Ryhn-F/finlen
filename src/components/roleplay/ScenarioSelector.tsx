@@ -73,7 +73,7 @@ export function ScenarioSelector({
 
         {/* Filters Row */}
         <div className="scenario-filter-row">
-          <span className="filter-icon" aria-hidden="true">
+          <span className="filter-icon  " aria-hidden="true">
             <Funnel size={18} weight="duotone" />
           </span>
 

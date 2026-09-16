@@ -2696,7 +2696,7 @@ input[type="range"]::-webkit-slider-thumb {
 .scenario-filter-row {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -2720,8 +2720,9 @@ input[type="range"]::-webkit-slider-thumb {
 .filter-select-wrap {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2px;
 }
+
 
 .filter-select-label {
   font-size: 0.7rem;

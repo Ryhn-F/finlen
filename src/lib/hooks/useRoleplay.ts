@@ -135,6 +135,7 @@ export function useCreateRoleplaySession() {
         },
         current_state: data.initial_state,
         xp_earned: 0,
+        answers_choices: data.answers_choices,
         created_at: data.created_at,
         completed_at: null,
         max_turns: data.max_turns || 10,
@@ -204,6 +205,7 @@ export function useSendRoleplayMessage(sessionId: string) {
           return {
             ...old,
             turn_number: nextTurnNumber,
+            answers_choices: [],
           };
         },
       );
@@ -269,14 +271,16 @@ export function useSendRoleplayMessage(sessionId: string) {
         );
       }
     },
-    onSettled: () => {
-      // Background invalidate to keep perfectly in sync
-      queryClient.invalidateQueries({
-        queryKey: ROLEPLAY_QUERY_KEYS.messages(sessionId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ROLEPLAY_QUERY_KEYS.session(sessionId),
-      });
+    onSettled: async () => {
+      // Await fresh session data so previous-turn answers never become selectable.
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ROLEPLAY_QUERY_KEYS.messages(sessionId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ROLEPLAY_QUERY_KEYS.session(sessionId),
+        }),
+      ]);
     },
   });
 }

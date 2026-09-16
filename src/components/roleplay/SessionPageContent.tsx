@@ -214,6 +214,7 @@ export function SessionPageContent({ sessionId }: SessionPageContentProps) {
             isCompleting={completeSessionMutation.isPending || isAutoCompleting}
             isMaxTurn={isMaxTurn}
             maxTurns={maxTurns}
+            answerChoices={session.answers_choices}
             onSendMessage={handleSendMessage}
           />
           <RoleplayStats

@@ -119,6 +119,7 @@ export interface CreateSessionResponse {
   turn_number: number;
   initial_state: SessionStateData;
   first_npc_message: string;
+  answers_choices: string[];
   created_at: string;
   max_turns?: number;
 }
@@ -131,6 +132,7 @@ export interface RoleplaySessionDetail {
   turn_number: number;
   scores: SessionScores;
   current_state: SessionStateData;
+  answers_choices: string[];
   xp_earned: number;
   created_at: string;
   completed_at: string | null;

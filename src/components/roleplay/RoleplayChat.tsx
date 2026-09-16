@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type FormEvent,
-  type KeyboardEvent,
-} from "react";
-import { PaperPlaneRight, Sparkle } from "@phosphor-icons/react";
+import { useCallback, useEffect, useRef } from "react";
+import { Sparkle } from "@phosphor-icons/react";
 import type { RoleplayMessageItem } from "@/lib/types/roleplay";
 import { ChatMessage } from "./ChatMessage";
 
@@ -20,11 +13,10 @@ interface RoleplayChatProps {
   isCompleting?: boolean;
   isMaxTurn?: boolean;
   maxTurns?: number;
+  answerChoices: string[];
   onSendMessage: (messageText: string) => void;
   onRetrySend?: (failedMessageText: string) => void;
 }
-
-const MAX_CHAR_LIMIT = 2000;
 
 export function RoleplayChat({
   messages,
@@ -34,14 +26,14 @@ export function RoleplayChat({
   isCompleting = false,
   isMaxTurn = false,
   maxTurns = 10,
+  answerChoices,
   onSendMessage,
   onRetrySend,
 }: RoleplayChatProps) {
-  const [inputText, setInputText] = useState("");
   const transcriptRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isChoiceSelectionDisabled =
+    isNpcResponding || isCompleted || isCompleting || isMaxTurn;
 
-  // Auto-scroll to bottom on message list change or typing state
   const scrollToBottom = useCallback(() => {
     if (transcriptRef.current) {
       transcriptRef.current.scrollTo({
@@ -55,40 +47,13 @@ export function RoleplayChat({
     scrollToBottom();
   }, [messages, isNpcResponding, scrollToBottom]);
 
-  function handleSubmit(e?: FormEvent) {
-    if (e) e.preventDefault();
-    const cleanText = inputText.trim();
-    if (!cleanText || isNpcResponding || isCompleted || isCompleting) return;
-
-    onSendMessage(cleanText);
-    setInputText("");
-
-    // Reset textarea height
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
-  }
-
-  function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  }
-
-  function handleInputChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    const val = e.target.value;
-    if (val.length <= MAX_CHAR_LIMIT) {
-      setInputText(val);
-      // Auto expand textarea
-      e.target.style.height = "auto";
-      e.target.style.height = `${Math.min(e.target.scrollHeight, 180)}px`;
-    }
+  function handleChoiceSelect(choice: string) {
+    if (isChoiceSelectionDisabled) return;
+    onSendMessage(choice);
   }
 
   return (
     <section className="roleplay-chat-area" aria-label="Ruang Keputusan Roleplay">
-      {/* Scrollable Transcript */}
       <div className="chat-transcript-scroll" ref={transcriptRef}>
         <div className="chat-intro-callout">
           <span className="intro-badge">Ruang Pengambilan Keputusan</span>
@@ -107,7 +72,6 @@ export function RoleplayChat({
           />
         ))}
 
-        {/* AI Thinking Indicator */}
         {isNpcResponding && (
           <div className="npc-thinking-row" role="status" aria-live="polite">
             <div className="thinking-bubble">
@@ -127,7 +91,6 @@ export function RoleplayChat({
         )}
       </div>
 
-      {/* Decision Input Box */}
       <footer className="chat-decision-dock">
         {isCompleted ? (
           <div className="session-completed-dock-banner">
@@ -140,62 +103,38 @@ export function RoleplayChat({
           <div className="session-autocompleting-dock-banner">
             <div className="autocompleting-spinner" aria-hidden="true" />
             <p>
-              <strong>Giliran maksimum tercapai ({maxTurns}/{maxTurns}).</strong> Menyelesaikan simulasi dan menghitung evaluasi akhir Naluri Finansial...
+              <strong>Giliran maksimum tercapai ({maxTurns}/{maxTurns}).</strong>{" "}
+              Menyelesaikan simulasi dan menghitung evaluasi akhir Naluri Finansial...
             </p>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="decision-form">
-            <div className="decision-prompt-bar">
-              <label htmlFor="user-decision-input" className="decision-prompt-label">
-                {isMaxTurn ? (
-                  <span className="max-turn-prompt-label">
-                    Keputusan Terakhir (Giliran {maxTurns}/{maxTurns}):
-                  </span>
-                ) : (
-                  "Apa yang akan kamu lakukan?"
-                )}
-              </label>
-              <span className="decision-char-counter font-mono">
-                {inputText.length} / {MAX_CHAR_LIMIT}
-              </span>
-            </div>
-
-            <div className="decision-input-wrap">
-              <textarea
-                id="user-decision-input"
-                ref={textareaRef}
-                className="decision-textarea"
-                rows={2}
-                placeholder={
-                  isMaxTurn
-                    ? "Tulis keputusan akhirmu untuk menyelesaikan simulasi ini..."
-                    : "Tulis keputusan, pertanyaan pembuktian, atau tawaran negosiasimu..."
-                }
-                value={inputText}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                disabled={isNpcResponding || isCompleting}
-                aria-label="Tulis keputusan atau responsmu"
-              />
-
-              <button
-                type="submit"
-                className="button button-primary decision-submit-btn"
-                disabled={isNpcResponding || isCompleting || !inputText.trim()}
-                aria-label="Kirim keputusan"
-                title="Tekan Enter untuk mengirim, Shift + Enter untuk baris baru"
-              >
-                <span>{isNpcResponding ? "Mengevaluasi..." : isMaxTurn ? "Kirim Akhir" : "Kirim"}</span>
-                <span className="button-orb" aria-hidden="true">
-                  <PaperPlaneRight size={16} weight="bold" />
-                </span>
-              </button>
-            </div>
-
-            <p className="input-shortcut-hint">
-              Tekan <kbd>Enter</kbd> untuk mengirim, <kbd>Shift + Enter</kbd> untuk baris baru.
+        ) : answerChoices.length > 0 ? (
+          <div className="answer-choice-panel" aria-label="Pilihan jawaban">
+            <p className="answer-choice-prompt">
+              {isMaxTurn
+                ? `Pilih keputusan terakhir (${maxTurns}/${maxTurns})`
+                : "Pilih jawabanmu"}
             </p>
-          </form>
+            <div className="answer-choice-list">
+              {answerChoices.map((choice, index) => (
+                <button
+                  className="answer-choice-button"
+                  disabled={isChoiceSelectionDisabled}
+                  key={`${index}-${choice}`}
+                  onClick={() => handleChoiceSelect(choice)}
+                  type="button"
+                >
+                  <span className="answer-choice-index" aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <span>{choice}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="answer-choice-loading" role="status" aria-live="polite">
+            Menyiapkan pilihan jawaban...
+          </div>
         )}
       </footer>
     </section>

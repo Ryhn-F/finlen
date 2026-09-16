@@ -4,14 +4,21 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   completeRoleplaySession,
   createRoleplaySession,
+  getRoleplayHistory,
+  getRoleplayHistoryDetail,
   getRoleplayMessages,
+  getRoleplayProgression,
   getRoleplaySession,
   sendRoleplayMessage,
 } from "../api/roleplay";
 import type {
   CompleteSessionResponse,
   CreateSessionResponse,
+  RoleplayHistoryDetail,
+  RoleplayHistoryOptions,
+  RoleplayHistoryResponse,
   RoleplayMessageItem,
+  RoleplayProgressionResponse,
   RoleplaySessionDetail,
   SendMessageResponse,
 } from "../types/roleplay";
@@ -20,7 +27,53 @@ import { useAuth } from "../context/AuthContext";
 export const ROLEPLAY_QUERY_KEYS = {
   session: (sessionId: string) => ["roleplay", "session", sessionId] as const,
   messages: (sessionId: string) => ["roleplay", "messages", sessionId] as const,
+  historyRoot: ["roleplay", "history"] as const,
+  history: (options: Required<RoleplayHistoryOptions>) =>
+    ["roleplay", "history", "list", options] as const,
+  historyDetail: (sessionId: string) =>
+    ["roleplay", "history", "detail", sessionId] as const,
+  progression: (limit: number) =>
+    ["roleplay", "history", "progression", limit] as const,
 };
+
+export function useRoleplayHistory(
+  options: RoleplayHistoryOptions = {},
+  enabled = true,
+) {
+  const normalizedOptions = {
+    limit: options.limit ?? 20,
+    offset: options.offset ?? 0,
+  };
+
+  return useQuery<RoleplayHistoryResponse>({
+    queryKey: ROLEPLAY_QUERY_KEYS.history(normalizedOptions),
+    queryFn: () => getRoleplayHistory(normalizedOptions),
+    enabled,
+    placeholderData: (previousData) => previousData,
+  });
+}
+
+export function useRoleplayHistoryDetail(
+  sessionId: string | null,
+  enabled = true,
+) {
+  return useQuery<RoleplayHistoryDetail>({
+    queryKey: ROLEPLAY_QUERY_KEYS.historyDetail(sessionId || ""),
+    queryFn: () => {
+      if (!sessionId) throw new Error("Session ID is required");
+      return getRoleplayHistoryDetail(sessionId);
+    },
+    enabled: enabled && !!sessionId,
+  });
+}
+
+export function useRoleplayProgression(limit = 100, enabled = true) {
+  return useQuery<RoleplayProgressionResponse>({
+    queryKey: ROLEPLAY_QUERY_KEYS.progression(limit),
+    queryFn: () => getRoleplayProgression(limit),
+    enabled,
+  });
+}
 
 export function useRoleplaySession(sessionId: string | null) {
   return useQuery<RoleplaySessionDetail>({
@@ -249,9 +302,12 @@ export function useCompleteRoleplaySession(sessionId: string) {
           };
         },
       );
-      // Invalidate session
+      // Invalidate the live session and all durable history/progression views.
       queryClient.invalidateQueries({
         queryKey: ROLEPLAY_QUERY_KEYS.session(sessionId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ROLEPLAY_QUERY_KEYS.historyRoot,
       });
       // Refresh user profile so level, XP, and financial_instinct reflect new stats
       refreshUser();

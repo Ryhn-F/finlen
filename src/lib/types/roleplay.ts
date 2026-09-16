@@ -167,6 +167,53 @@ export interface RoleplayMessageItem {
   isFailed?: boolean;
 }
 
+export interface RoleplayHistoryItem {
+  session_id: string;
+  scenario: string;
+  scenario_title: string;
+  status: string;
+  average_score: number;
+  xp_earned: number;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export interface RoleplayHistoryResponse {
+  items: RoleplayHistoryItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface RoleplayHistoryOptions {
+  limit?: number;
+  offset?: number;
+}
+
+export interface RoleplayHistoryDetail {
+  session_id: string;
+  scenario: string;
+  scenario_title: string;
+  status: string;
+  scores: SessionScores;
+  average_score: number;
+  xp_earned: number;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export interface ProgressionChartPoint {
+  session_id: string;
+  completed_at: string;
+  average_score: number;
+}
+
+export interface RoleplayProgressionResponse {
+  points: ProgressionChartPoint[];
+  count: number;
+  limit: number;
+}
+
 export interface UserProgressionUpdate {
   user_id: string;
   level: number;

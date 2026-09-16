@@ -5,7 +5,11 @@ import { apiClient, ApiError } from "./client";
 import type {
   CompleteSessionResponse,
   CreateSessionResponse,
+  RoleplayHistoryDetail,
+  RoleplayHistoryOptions,
+  RoleplayHistoryResponse,
   RoleplayMessageItem,
+  RoleplayProgressionResponse,
   RoleplaySessionDetail,
   SendMessageResponse,
 } from "../types/roleplay";
@@ -62,6 +66,49 @@ export async function getRoleplayMessages(
 
   return apiClient<RoleplayMessageItem[]>(
     `/api/v1/roleplay/sessions/${encodeURIComponent(sessionId)}/messages${queryString}`,
+    {
+      method: "GET",
+      requiresAuth: true,
+    },
+  );
+}
+
+export async function getRoleplayHistory(
+  options: RoleplayHistoryOptions = {},
+): Promise<RoleplayHistoryResponse> {
+  const query = new URLSearchParams();
+  if (options.limit !== undefined) query.set("limit", String(options.limit));
+  if (options.offset !== undefined) query.set("offset", String(options.offset));
+  const queryString = query.toString() ? `?${query.toString()}` : "";
+
+  return apiClient<RoleplayHistoryResponse>(
+    `/api/v1/roleplay/history${queryString}`,
+    {
+      method: "GET",
+      requiresAuth: true,
+    },
+  );
+}
+
+export async function getRoleplayHistoryDetail(
+  sessionId: string,
+): Promise<RoleplayHistoryDetail> {
+  return apiClient<RoleplayHistoryDetail>(
+    `/api/v1/roleplay/history/${encodeURIComponent(sessionId)}`,
+    {
+      method: "GET",
+      requiresAuth: true,
+    },
+  );
+}
+
+export async function getRoleplayProgression(
+  limit = 100,
+): Promise<RoleplayProgressionResponse> {
+  const query = new URLSearchParams({ limit: String(limit) });
+
+  return apiClient<RoleplayProgressionResponse>(
+    `/api/v1/roleplay/history/progression?${query.toString()}`,
     {
       method: "GET",
       requiresAuth: true,

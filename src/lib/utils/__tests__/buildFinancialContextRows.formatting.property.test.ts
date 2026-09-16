@@ -105,25 +105,22 @@ describe("Feature: roleplay-scenario-detail-flow, Property 14: Row value formatt
     );
   });
 
-  it("renders string values verbatim regardless of key suffix (sub-property E)", () => {
-    const anyKeyArb = fc.constantFrom(
-      "loan_amount",
-      "interest_rate",
-      "repayment_period_months",
-      "random_key",
-      "current_savings",
-      "monthly_essential_expenses",
+  it("humanizes snake_case labels and values while preserving fixed labels and plain text (sub-property E)", () => {
+    const userConditionRow = buildSingleRow("user_condition", "emotionally_conflicted_friend");
+    expect(userConditionRow.label).toBe("Kondisi Pemain");
+    expect(userConditionRow.value).toBe("Emotionally Conflicted Friend");
+    expect(userConditionRow.isNumeric).toBe(false);
+
+    const friendHistoryRow = buildSingleRow(
+      "friend_history",
+      "unreliable_repayment_record",
     );
-    const nonEmptyStringArb = fc
-      .string({ minLength: 1 })
-      .filter((s) => s.trim().length > 0);
-    fc.assert(
-      fc.property(nonEmptyStringArb, anyKeyArb, currencyArb, (value, key, currency) => {
-        const row = buildSingleRow(key, value, currency);
-        expect(row.value).toBe(value);
-        expect(row.isNumeric).toBe(false);
-      }),
-      { numRuns: 100 },
-    );
+    expect(friendHistoryRow.label).toBe("Friend History");
+    expect(friendHistoryRow.value).toBe("Unreliable Repayment Record");
+    expect(friendHistoryRow.isNumeric).toBe(false);
+
+    const plainTextRow = buildSingleRow("user_condition", "Sedang mencari kerja");
+    expect(plainTextRow.value).toBe("Sedang mencari kerja");
+    expect(plainTextRow.isNumeric).toBe(false);
   });
 });

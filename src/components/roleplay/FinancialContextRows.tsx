@@ -11,7 +11,7 @@ interface FinancialContextRowsProps {
  * Renders the ordered, filtered, capped `financial_context` rows in the
  * Scenario_Detail_Page's right-column briefing panel. Every numeric row
  * value is wrapped in the monospace numeral font (Requirement 9.4); string
- * values render verbatim with no extra wrapper.
+ * values are humanized from snake_case for display, with no extra wrapper.
  *
  * Requirements: 4.3, 4.4, 4.5, 4.6, 4.13, 4.14, 4.15, 9.4
  */

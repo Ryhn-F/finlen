@@ -50,7 +50,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="hero-art-shell  ">
+        <div className="hero-art-shell hidden sm:!block ">
           <div
             className="hero-art-slot"
             role="img"
@@ -60,7 +60,7 @@ export default function Home() {
               src="/hero.webp"
               alt="Ilustrasi pelajar sedang menguji pilihan finansial"
               width={600}
-              height={300}
+              height={400}
               priority
             />
           </div>

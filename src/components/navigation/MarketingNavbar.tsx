@@ -77,7 +77,7 @@ export default function MarketingNavbar({
   }, []);
 
   return (
-    <header className="marketing-nav-wrap">
+    <header className="marketing-nav-wrap !absolute top-0 !z-50 w-full">
       {/* Backdrop overlay for mobile menu */}
       <div
         className={`mobile-menu-backdrop ${isOpen ? "is-open" : ""}`}

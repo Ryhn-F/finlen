@@ -6,15 +6,21 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { ApiError } from "@/lib/api/client";
 
 export function AuthModal() {
-  const { isAuthModalOpen, authModalMode, closeAuthModal, login, register } = useAuth();
-  const [mode, setMode] = useState<"login" | "register">(authModalMode);
+  const {
+    isAuthModalOpen,
+    authModalMode,
+    openAuthModal,
+    closeAuthModal,
+    login,
+    register,
+  } = useAuth();
+  const mode = authModalMode;
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Sync mode if authModalMode changed
   if (!isAuthModalOpen) return null;
 
   async function handleSubmit(e: FormEvent) {
@@ -89,7 +95,7 @@ export function AuthModal() {
             aria-selected={mode === "login"}
             className={`auth-tab ${mode === "login" ? "is-active" : ""}`}
             onClick={() => {
-              setMode("login");
+              openAuthModal("login");
               setError(null);
             }}
           >
@@ -101,7 +107,7 @@ export function AuthModal() {
             aria-selected={mode === "register"}
             className={`auth-tab ${mode === "register" ? "is-active" : ""}`}
             onClick={() => {
-              setMode("register");
+              openAuthModal("register");
               setError(null);
             }}
           >

@@ -119,12 +119,26 @@ export function buildFinancialContextRows(
 }
 
 /**
+ * Converts backend snake_case labels and values into readable title case
+ * without changing source data. Plain strings are retained exactly as provided.
+ */
+export function humanizeFinancialContextText(value: string): string {
+  if (!value.includes("_")) return value;
+
+  return value
+    .split("_")
+    .map((word) => word ? `${word[0].toUpperCase()}${word.slice(1)}` : word)
+    .join(" ");
+}
+
+/**
  * Formats a single `financial_context` entry into a display row.
  *
- * String values always render verbatim, regardless of key suffix (Req 4.14).
- * Numeric values are formatted based on the key's suffix, checked in this
- * order: `_amount`/`_savings`/`_expenses` -> currency, `_rate` -> percentage,
- * `_months` -> "N bulan", else Indonesian locale grouping (Req 4.4-4.6, 4.13).
+ * String values are humanized when supplied in snake_case, regardless of key
+ * suffix. Numeric values are formatted based on the key's suffix, checked in
+ * this order: `_amount`/`_savings`/`_expenses` -> currency, `_rate` ->
+ * percentage, `_months` -> "N bulan", else Indonesian locale grouping
+ * (Req 4.4-4.6, 4.13).
  *
  * Requirements: 4.3, 4.4, 4.5, 4.6, 4.13, 4.14
  */
@@ -133,10 +147,10 @@ function formatRow(
   value: number | string,
   currency: string | null | undefined,
 ): FinancialContextRow {
-  const label = FIXED_LABELS[key] ?? key.replace(/_/g, " ");
+  const label = FIXED_LABELS[key] ?? humanizeFinancialContextText(key);
 
   if (typeof value === "string") {
-    return { key, label, value, isNumeric: false };
+    return { key, label, value: humanizeFinancialContextText(value), isNumeric: false };
   }
 
   if (/_amount$|_savings$|_expenses$/.test(key)) {

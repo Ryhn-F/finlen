@@ -118,7 +118,7 @@ export default function ScannerWorkspace() {
         user={{
           name: user?.username || "Tamu FinLen",
           role: user ? `Level ${user.level} · ${user.xp} XP` : "Belum Masuk",
-          profileHref: "#profile",
+          profileHref: "/app/profile",
         }}
       />
 

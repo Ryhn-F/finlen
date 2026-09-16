@@ -83,7 +83,7 @@ export function SessionPage({ sessionId }: SessionPageProps) {
         user={{
           name: user?.username || "Tamu FinLen",
           role: user ? `Level ${user.level} · ${user.xp} XP` : "Belum Masuk",
-          profileHref: "#profile",
+          profileHref: "/app/profile",
         }}
       />
 

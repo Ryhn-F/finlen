@@ -77,7 +77,7 @@ export interface AppSidebarProps {
 }
 
 const DEFAULT_NAV_ITEMS: SidebarNavItem[] = [
-  { id: "dashboard", label: "Dasbor", href: "#dashboard", icon: House },
+  { id: "dashboard", label: "Dasbor", href: "/app/dashboard", icon: House },
   {
     id: "simulator",
     label: "Simulator",
@@ -91,7 +91,7 @@ const DEFAULT_NAV_ITEMS: SidebarNavItem[] = [
     icon: BookOpenText,
   },
   { id: "scanner", label: "Pemindai", href: "/app/scanner", icon: Scan },
-  { id: "progress", label: "Progres", href: "#progress", icon: Gauge },
+  { id: "progress", label: "Progres", href: "/app/progress", icon: Gauge },
 ];
 
 export default function AppSidebar({
@@ -138,7 +138,7 @@ export default function AppSidebar({
       ? {
           name: auth.user.username,
           role: `Level ${auth.user.level} · ${auth.user.xp} XP`,
-          profileHref: "#profile",
+          profileHref: "/app/profile",
         }
       : {
           name: "Tamu",
@@ -367,8 +367,11 @@ export default function AppSidebar({
 
         <div className="sidebar-profile">
           <Link
-            href={resolvedUser.profileHref || "#profile"}
-            className="profile-link"
+            href={resolvedUser.profileHref || "/app/profile"}
+            className={`profile-link ${pathname?.startsWith("/app/profile") ? "active" : ""}`}
+            aria-current={
+              pathname?.startsWith("/app/profile") ? "page" : undefined
+            }
             title={
               isMinimized
                 ? `${resolvedUser.name} (${resolvedUser.role || "Profil"})`

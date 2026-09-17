@@ -5,6 +5,7 @@ export { DocumentPreview } from "./DocumentPreview";
 export type { DocumentPreviewProps } from "./DocumentPreview";
 export { AnalysisLoading } from "./AnalysisLoading";
 export { AnalysisResult } from "./AnalysisResult";
+export { ExampleDocumentModal } from "./ExampleDocumentModal";
 export { RiskLevelBadge } from "./RiskLevelBadge";
 export { FinancialTermsCard } from "./FinancialTermsCard";
 export { RiskFactorsCard } from "./RiskFactorsCard";

@@ -181,8 +181,11 @@ export default function Home() {
                 Ubah dokumen keuangan yang rumit menjadi penjelasan sederhana
                 tentang istilah yang perlu diperiksa lebih lanjut.
               </p>
+              <Link href="/app/scanner">
+                Coba Scanner <ArrowRight size={16} weight="bold" />
+              </Link>
             </div>
-             <div className="feature-roleplay-media">
+            <div className="feature-roleplay-media">
               <Image
                 src="/document.png"
                 width={400}

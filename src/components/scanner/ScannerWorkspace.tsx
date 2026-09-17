@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   ArrowClockwise,
   Coins,
+  Eye,
   Flag,
   GraduationCap,
   LockKey,
@@ -28,6 +29,7 @@ import { DocumentDropzone } from "./DocumentDropzone";
 import { DocumentPreview } from "./DocumentPreview";
 import { AnalysisLoading } from "./AnalysisLoading";
 import { AnalysisResult } from "./AnalysisResult";
+import { ExampleDocumentModal } from "./ExampleDocumentModal";
 
 type ScannerState = "idle" | "selected" | "analyzing" | "success" | "error";
 
@@ -61,6 +63,7 @@ export default function ScannerWorkspace() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarMinimized, setSidebarMinimized] = useSidebarState();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [exampleModalOpen, setExampleModalOpen] = useState(false);
 
   const analyzeMutation = useAnalyzeDocument();
   const analysis = analyzeMutation.data?.analysis ?? null;
@@ -102,6 +105,12 @@ export default function ScannerWorkspace() {
   function handleAnalyzeAnother() {
     analyzeMutation.reset();
     setSelectedFile(null);
+  }
+
+  function handleUseExample(file: File) {
+    setExampleModalOpen(false);
+    analyzeMutation.reset();
+    setSelectedFile(file);
   }
 
   const showUploadWorkspace =
@@ -277,7 +286,23 @@ export default function ScannerWorkspace() {
                       }
                     />
                   ) : (
-                    <DocumentDropzone onFileSelected={handleFileSelected} />
+                    <>
+                      <DocumentDropzone onFileSelected={handleFileSelected} />
+
+                      <button
+                        type="button"
+                        className="scanner-example-btn"
+                        onClick={() => setExampleModalOpen(true)}
+                      >
+                        <span className="scanner-example-btn-orb" aria-hidden="true">
+                          <Eye size={18} weight="duotone" />
+                        </span>
+                        <span className="scanner-example-btn-copy">
+                          <strong>Coba contoh dokumen</strong>
+                          <small>Lihat pratinjau &amp; analisis dokumen Surat Perjanjian Hutang Piutang.</small>
+                        </span>
+                      </button>
+                    </>
                   )}
                 </div>
 
@@ -333,6 +358,12 @@ export default function ScannerWorkspace() {
       </div>
 
       <AuthModal />
+
+      <ExampleDocumentModal
+        open={exampleModalOpen}
+        onClose={() => setExampleModalOpen(false)}
+        onUseExample={handleUseExample}
+      />
     </div>
   );
 }

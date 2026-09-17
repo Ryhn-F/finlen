@@ -25,7 +25,7 @@ const DEFAULT_LINKS: NavLink[] = [
   { label: "Belajar", href: "#learn" },
   { label: "Simulator", href: "/app/simulator" },
   { label: "Bermain Peran", href: "/app/roleplay" },
-  { label: "Pemindai", href: "#scanner" },
+  { label: "Pemindai", href: "/app/scanner" },
 ];
 
 export default function MarketingNavbar({

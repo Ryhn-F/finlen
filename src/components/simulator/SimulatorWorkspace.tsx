@@ -22,10 +22,13 @@ import {
   YAxis,
 } from "recharts";
 
+type InterestType = "flat" | "compound";
+
 type Scenario = {
   debt: number;
   rate: number;
   duration: number;
+  interestType: InterestType;
 };
 
 type ChartPoint = {
@@ -35,8 +38,8 @@ type ChartPoint = {
   optionB?: number;
 };
 
-const DEFAULT_A: Scenario = { debt: 5_000_000, rate: 2, duration: 12 };
-const DEFAULT_B: Scenario = { debt: 5_000_000, rate: 5, duration: 12 };
+const DEFAULT_A: Scenario = { debt: 5_000_000, rate: 2, duration: 12, interestType: "compound" };
+const DEFAULT_B: Scenario = { debt: 5_000_000, rate: 5, duration: 12, interestType: "compound" };
 
 const DEBT_BOUNDS = { min: 100_000, max: 50_000_000 };
 const RATE_BOUNDS = { min: 0, max: 10 };
@@ -60,22 +63,33 @@ function readBoundedParam(
 function resolveInitialScenario(params: URLSearchParams): Scenario {
   const debt = readBoundedParam(params.get("debt"), DEBT_BOUNDS);
   const rate = readBoundedParam(params.get("rate"), RATE_BOUNDS);
+  const typeParam = params.get("interestType");
+  const interestType: InterestType =
+    typeParam === "flat" ? "flat" : "compound";
 
   return {
     debt: debt ?? DEFAULT_A.debt,
     rate: rate ?? DEFAULT_A.rate,
     duration: DEFAULT_A.duration,
+    interestType,
   };
 }
 
-function calculateFinal({ debt, rate, duration }: Scenario) {
-  return Math.floor(debt * (1 + rate / 100) ** duration);
+function calcAtMonth(debt: number, rate: number, month: number, type: InterestType) {
+  if (type === "flat") {
+    return Math.floor(debt + debt * (rate / 100) * month);
+  }
+  return Math.floor(debt * (1 + rate / 100) ** month);
+}
+
+function calculateFinal({ debt, rate, duration, interestType }: Scenario) {
+  return calcAtMonth(debt, rate, duration, interestType);
 }
 
 function createSeries(scenario: Scenario): ChartPoint[] {
   return Array.from({ length: scenario.duration + 1 }, (_, month) => ({
     month,
-    amount: Math.floor(scenario.debt * (1 + scenario.rate / 100) ** month),
+    amount: calcAtMonth(scenario.debt, scenario.rate, month, scenario.interestType),
   }));
 }
 
@@ -88,11 +102,11 @@ function createComparisonSeries(
     month,
     optionA:
       month <= optionA.duration
-        ? Math.floor(optionA.debt * (1 + optionA.rate / 100) ** month)
+        ? calcAtMonth(optionA.debt, optionA.rate, month, optionA.interestType)
         : undefined,
     optionB:
       month <= optionB.duration
-        ? Math.floor(optionB.debt * (1 + optionB.rate / 100) ** month)
+        ? calcAtMonth(optionB.debt, optionB.rate, month, optionB.interestType)
         : undefined,
   }));
 }
@@ -217,6 +231,47 @@ function InterestWarning({ rate }: { rate: number }) {
   );
 }
 
+function InterestTypeSelector({
+  value,
+  onChange,
+  id,
+}: {
+  value: InterestType;
+  onChange: (type: InterestType) => void;
+  id?: string;
+}) {
+  return (
+    <div className="interest-type-selector" id={id}>
+      <span className="interest-type-label">Jenis bunga</span>
+      <div className="interest-type-toggle">
+        <button
+          type="button"
+          className={`interest-type-btn ${value === "compound" ? "is-active" : ""}`}
+          onClick={() => onChange("compound")}
+          aria-pressed={value === "compound"}
+        >
+          <span className="interest-type-icon">📈</span>
+          Majemuk
+        </button>
+        <button
+          type="button"
+          className={`interest-type-btn ${value === "flat" ? "is-active" : ""}`}
+          onClick={() => onChange("flat")}
+          aria-pressed={value === "flat"}
+        >
+          <span className="interest-type-icon">📊</span>
+          Flat
+        </button>
+      </div>
+      <span className="interest-type-hint">
+        {value === "compound"
+          ? "Bunga dihitung dari total saldo (bunga berbunga)."
+          : "Bunga dihitung dari utang awal saja (tetap tiap bulan)."}
+      </span>
+    </div>
+  );
+}
+
 function ComparisonRateControl({
   name,
   scenario,
@@ -244,6 +299,10 @@ function ComparisonRateControl({
         onChange={(rate) => onChange({ ...scenario, rate })}
       />
       <InterestWarning rate={scenario.rate} />
+      <InterestTypeSelector
+        value={scenario.interestType}
+        onChange={(interestType) => onChange({ ...scenario, interestType })}
+      />
     </section>
   );
 }
@@ -416,7 +475,7 @@ function SimulatorInnerWorkspace() {
             <div>
               <h1>Lihat bagaimana waktu mengubah utang.</h1>
               <p>
-                Ubah nilainya. Grafik diperbarui langsung agar bunga majemuk
+                Ubah nilainya. Grafik diperbarui langsung agar pertumbuhan bunga
                 terlihat nyata dan mudah dipahami.
               </p>
             </div>
@@ -667,6 +726,12 @@ function SimulatorInnerWorkspace() {
                             }
                           />
                           <InterestWarning rate={optionA.rate} />
+                          <InterestTypeSelector
+                            value={optionA.interestType}
+                            onChange={(interestType) =>
+                              updateOptionA({ ...optionA, interestType })
+                            }
+                          />
 
                           <SliderField
                             label="Durasi Opsi A"
@@ -744,6 +809,12 @@ function SimulatorInnerWorkspace() {
                             }
                           />
                           <InterestWarning rate={optionB.rate} />
+                          <InterestTypeSelector
+                            value={optionB.interestType}
+                            onChange={(interestType) =>
+                              updateOptionB({ ...optionB, interestType })
+                            }
+                          />
 
                           <SliderField
                             label="Durasi Opsi B"
@@ -815,6 +886,13 @@ function SimulatorInnerWorkspace() {
                     onChange={(rate) => updateOptionA({ ...optionA, rate })}
                   />
                   <InterestWarning rate={optionA.rate} />
+                  <InterestTypeSelector
+                    value={optionA.interestType}
+                    onChange={(interestType) => {
+                      updateOptionA({ ...optionA, interestType });
+                    }}
+                    id="interest-type-single"
+                  />
                   <SliderField
                     label="Durasi"
                     value={optionA.duration}
@@ -1057,7 +1135,8 @@ function SimulatorInnerWorkspace() {
 
           <p className="simulator-safety">
             Ini adalah simulasi edukatif, bukan nasihat keuangan, hukum, atau
-            investasi. Hasil menggunakan asumsi bunga majemuk bulanan tanpa
+            investasi. Hasil menggunakan asumsi bunga{" "}
+            {optionA.interestType === "flat" ? "flat" : "majemuk"} bulanan tanpa
             pembayaran cicilan atau biaya tambahan.
           </p>
         </main>

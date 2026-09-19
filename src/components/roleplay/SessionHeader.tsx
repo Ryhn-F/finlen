@@ -69,18 +69,28 @@ export function SessionHeader({
           )}
         </div>
 
-        {!isCompleted && onComplete && (
-          <button
-            type="button"
-            className="button button-secondary session-complete-trigger-btn"
-            onClick={onComplete}
-            disabled={isCompleting}
-            title="Akhiri sesi dan hitung skor akhir Naluri Finansial"
-          >
-            <FlagCheckered size={16} weight="bold" />
-            <span>{isCompleting ? "Menyelesaikan..." : "Selesaikan Sesi"}</span>
-          </button>
-        )}
+        {!isCompleted && onComplete && (() => {
+          const MIN_TURNS = 5;
+          const canComplete = turnNumber >= MIN_TURNS;
+          const turnsRemaining = MIN_TURNS - turnNumber;
+
+          return (
+            <button
+              type="button"
+              className="button button-secondary session-complete-trigger-btn"
+              onClick={onComplete}
+              disabled={isCompleting || !canComplete}
+              title={
+                canComplete
+                  ? "Akhiri sesi dan hitung skor akhir Naluri Finansial"
+                  : `Minimal ${MIN_TURNS} giliran diperlukan (${turnsRemaining} lagi)`
+              }
+            >
+              <FlagCheckered size={16} weight="bold" />
+              <span>{isCompleting ? "Menyelesaikan..." : "Selesaikan Sesi"}</span>
+            </button>
+          );
+        })()}
       </div>
     </header>
   );
